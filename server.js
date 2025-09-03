@@ -4,26 +4,22 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = 80;
 
-let latestLocation = { lat: 0, lng: 0 };
+let latestLocation = { lat: -12.0464, lng: -77.0428 }; // Valor inicial (Lima)
 
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
-// Recibir ubicación
+// Recibir ubicación desde Android
 app.post('/location', (req, res) => {
   const { latitude, longitude } = req.body;
   latestLocation = { lat: latitude, lng: longitude };
   console.log('Ubicación recibida:', latestLocation);
-  res.send({ status: 'OK', latestLocation });
+  res.json({ status: 'OK' });
 });
 
-// Mostrar ubicación
-app.get('/', (req, res) => {
-  res.send(`
-    <h1>Ubicación actual</h1>
-    <p>Latitud: ${latestLocation.lat}</p>
-    <p>Longitud: ${latestLocation.lng}</p>
-    <a href="https://www.google.com/maps?q=${latestLocation.lat},${latestLocation.lng}" target="_blank">Ver en Google Maps</a>
-  `);
+// Entregar última ubicación
+app.get('/latest', (req, res) => {
+  res.json(latestLocation);
 });
 
-app.listen(PORT, () => console.log(`Servidor en http://0.0.0.0:${PORT}`));
+app.listen(PORT, () => console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`));
